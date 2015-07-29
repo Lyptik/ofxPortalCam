@@ -3,6 +3,7 @@
 
 #include "ofMain.h"
 #include "ofxPortalCam.h"
+#include "ofxOpenNI.h"
 
 class testApp : public ofBaseApp{
 	
@@ -20,8 +21,9 @@ public:
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 	void windowResized(int w, int h);
-
+    
 	ofxPortalCam myPortalCam;
+    ofxOpenNI openNIDevice;
 };
 
 #endif
