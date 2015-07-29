@@ -10,15 +10,25 @@
 #include "ofxPortalCam.h"
 
 ofxPortalCam::ofxPortalCam() {
+    
+}
+
+void ofxPortalCam::setup(){
+    
+    ofSetLogLevel(OF_LOG_VERBOSE);
+    
 	kinectDevice.setup();
 	kinectDevice.addDepthGenerator();
 	kinectDevice.addUserGenerator();
 	kinectDevice.setRegister(true);
     kinectDevice.setMaxNumUsers(1);
     ofAddListener(kinectDevice.userEvent, this, &ofxPortalCam::userEvent);
-
-    kinectDevice.setBaseUserClass(user);	
-
+    
+    user = new ofxOpenNIUser();
+    kinectDevice.setBaseUserClass(*user);
+    
+    kinectDevice.start();
+    
 	calibDone = false;
 	calibStep = 0;
 	screenNormal.set(0, 0, 1);
@@ -78,13 +88,13 @@ void ofxPortalCam::resetCalib() {
 }
 
 ofxOpenNIUser ofxPortalCam::getViewerBody() {
-	return this->user;
+	return *user;
 }
 
 void ofxPortalCam::drawCalib() {
     kinectDevice.update();
     for(int i = 0; i < kinectDevice.getNumTrackedUsers(); i++){
-        user = kinectDevice.getTrackedUser(i);
+        user = &kinectDevice.getTrackedUser(i);
 	}
 	bool canCalibrate = (kinectDevice.getNumTrackedUsers() > 0 ) ? true : false;
 	ofPushStyle();
@@ -109,10 +119,10 @@ void ofxPortalCam::drawCalib() {
 void ofxPortalCam::begin() {
     kinectDevice.update();
     for(int i = 0; i < kinectDevice.getNumTrackedUsers(); i++){
-        user = kinectDevice.getTrackedUser(i);
+        user = &kinectDevice.getTrackedUser(i);
 	}
-	if (user.getLimb(Head).found == 1) {
-		ofVec3f screenHead = screenify(user.getLimb(Head).worldBegin);
+	if (user->isFound() && user->getJoint(JOINT_HEAD).isFound()) {
+		ofVec3f screenHead = screenify(user->getJoint(JOINT_HEAD).getWorldPosition());
 		myOfCamera.setPosition(screenHead);
 	} else {
 		myOfCamera.setPosition(0, 0, ofGetWindowWidth() * 2.5);
@@ -136,11 +146,11 @@ void ofxPortalCam::userEvent(ofxOpenNIUserEvent & event){
 }
 
 void ofxPortalCam::createCalibRay() {
-	if ((!calibDone) && user.getLimb(Head).found == 1 && user.getLimb(LeftHand).found == 1) {
+	if ((!calibDone) && user->isFound() && user->getJoint(JOINT_HEAD).isFound() && user->getJoint(JOINT_LEFT_HAND).isFound()) {
 		ofVec3f headPosition, handPosition;
-		headPosition = user.getLimb(Head).worldBegin;
+		headPosition = user->getJoint(JOINT_HEAD).getWorldPosition();
 		// for some reason "Left" is from the kinect's perspective, so I changed it to the human perspective
-		handPosition = user.getLimb(LeftHand).worldBegin;
+		handPosition = user->getJoint(JOINT_LEFT_HAND).getWorldPosition();
 		calibRays[calibStep] = ofRay(headPosition, handPosition - headPosition);
 		calibStep = calibStep + 1;
 		ofLog() << headPosition;
@@ -159,7 +169,7 @@ void ofxPortalCam::calcCalib(){
 	for (int i = 0; i < 3; i++) {
 		ofVec3f averagePoint;
 		int numOfIntersections = CALIBRATION_STEPS / 3; // num of intersections per plane definition point
-		ofVec3f individualPoints[numOfIntersections];
+		ofVec3f* individualPoints = new ofVec3f[numOfIntersections];
 		for (int j = 0; j < numOfIntersections; j++) {
 			int thisInd = (i +  j    * 3);
 			int nextInd = (i + (j+1) * 3) % CALIBRATION_STEPS;
@@ -171,6 +181,7 @@ void ofxPortalCam::calcCalib(){
 		}
 		averagePoint.average(individualPoints, numOfIntersections);
 		planeDefinition[i] = averagePoint;
+        delete individualPoints;
 	}
 
 	// next, i need to find out how to transform kinect space into screen space.
@@ -222,7 +233,7 @@ void ofxPortalCam::calcCalib(){
 void ofxPortalCam::tweakOrientation(){
 	if (calibDone) {
 		tweakAngle = 0;
-		ofVec3f screenHead = screenify(user.getLimb(Head).worldBegin);
+		ofVec3f screenHead = screenify(user->getJoint(JOINT_HEAD).getWorldPosition());
 		tweakPerp = screenHead.getPerpendicular(screenNormal);
 		tweakAngle = screenHead.angle(screenNormal);
 		calibFile.loadFile("calib.xml");

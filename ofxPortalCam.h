@@ -21,6 +21,7 @@ public:
 	ofxPortalCam();
 	void begin();
 	void end();
+    void setup();
 
 	void drawCalib();
 	void createCalibRay();
@@ -39,7 +40,7 @@ protected:
 	ofCamera myOfCamera;
 
 	ofxOpenNI kinectDevice;
-	ofxOpenNIUser user;
+	ofxOpenNIUser* user;
 	void userEvent(ofxOpenNIUserEvent & event);
 
 	bool calibDone;
