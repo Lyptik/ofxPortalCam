@@ -24,7 +24,7 @@ void ofxPortalCam::setup(){
     
     headPos = ofPoint(0,0,0);
     handPos = ofPoint(0,0,0);
-    isUserTracked = false;
+    bIsUserTracked = false;
     
 	loadCalib();
 }
@@ -81,11 +81,11 @@ void ofxPortalCam::resetCalib() {
 }
 
 void ofxPortalCam::drawCalib() {
-	bool canCalibrate = isUserTracked;
+	bool canCalibrate = bIsUserTracked;
 	ofPushStyle();
 	ofSetColor(255, 255, 255);
 	ofFill();
-	if(isUserTracked){
+	if(bIsUserTracked){
         ofPushStyle();
 		ofSetColor(0, 255, 0);
 		ofCircle(headPos.x * ofGetWidth(), headPos.y * ofGetHeight(), headPos.z * 100, 20);
@@ -110,7 +110,7 @@ void ofxPortalCam::drawCalib() {
 }
 
 void ofxPortalCam::begin() {
-	if (isUserTracked && headPos != ofVec3f(0,0,0)) {
+	if (bIsUserTracked && headPos != ofVec3f(0,0,0)) {
 		ofVec3f screenHead = screenify(headPos);
 		myOfCamera.setPosition(screenHead);
 	} else {
@@ -128,11 +128,10 @@ void ofxPortalCam::begin() {
 
 void ofxPortalCam::end() {
 	myOfCamera.end();
-    isUserTracked = false;
 }
 
 void ofxPortalCam::createCalibRay() {
-	if ((!calibDone) && isUserTracked && headPos!=ofVec3f(0,0,0) && handPos!=ofVec3f(0,0,0)) {
+	if ((!calibDone) && bIsUserTracked && headPos!=ofVec3f(0,0,0) && handPos!=ofVec3f(0,0,0)) {
 		ofVec3f headPosition, handPosition;
 		headPosition = headPos;
 		// for some reason "Left" is from the kinect's perspective, so I changed it to the human perspective
@@ -248,12 +247,14 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 //--------------------------------------------------------------
 void ofxPortalCam::setHeadPosition(ofPoint pos){
     headPos = pos;
-    isUserTracked = true;
 }
 
 //--------------------------------------------------------------
 void ofxPortalCam::setHandPosition(ofPoint pos){
     handPos = pos;
-    isUserTracked = true;
 }
 
+//--------------------------------------------------------------
+void ofxPortalCam::isUserTracked(bool b){
+    bIsUserTracked = b;
+}

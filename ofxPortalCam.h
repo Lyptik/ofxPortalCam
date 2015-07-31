@@ -36,6 +36,7 @@ public:
     
     void setHeadPosition(ofPoint pos);
     void setHandPosition(ofPoint pos);
+    void isUserTracked(bool b);
 
 protected:
 	void updateUserFromOSC();
@@ -44,7 +45,7 @@ protected:
     
     ofPoint headPos;
     ofPoint handPos;
-    bool isUserTracked;
+    bool bIsUserTracked;
 
 	bool calibDone;
 	int calibStep;
