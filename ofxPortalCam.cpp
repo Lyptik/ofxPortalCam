@@ -88,8 +88,8 @@ void ofxPortalCam::drawCalib() {
 	if(isUserTracked){
         ofPushStyle();
 		ofSetColor(0, 255, 0);
-		ofCircle(headPos.x, headPos.y, headPos.z, 20);
-        ofCircle(handPos.x, handPos.y, handPos.z, 10);
+		ofCircle(headPos.x * ofGetWidth(), headPos.y * ofGetHeight(), headPos.z * 100, 20);
+        ofCircle(handPos.x * ofGetWidth(), handPos.y * ofGetHeight(), handPos.z * 100, 10);
 		ofPopStyle();
     } else {
         ofDrawBitmapString("No user detected. Can't calibrate.", 20, 20);

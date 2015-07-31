@@ -14,16 +14,44 @@
 //--------------------------------------------------------------
 void testApp::setup() {
     myPortalCam.setup();
+    
+    // Setup OSC receiver
+    int oscPort = 12000;
+    oscDisplayMessage = "Listening to OSC on port " + ofToString(oscPort);
+    try {
+        oscReceiver.setup(oscPort);
+    } catch (std::exception&e) {
+        ofLogWarning("osc") << "Error : " << ofToString(e.what());
+        oscDisplayMessage = "Could not bind to port " + ofToString(oscPort);
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
+    // Get head position with osc
+    // Here, kinectUsers osc protocol is used
+    if(oscReceiver.hasWaitingMessages()){
+        // Check for waiting messages
+        while( oscReceiver.hasWaitingMessages() ){
+            // Get the next message
+            ofxOscMessage m;
+            oscReceiver.getNextMessage( &m );
+            
+            // get head position
+            if(m.getAddress() == "/player0/head/pos" || m.getAddress() == "/player0/head/pos/"){    // can be useful to check both, in case you don't know exactly what is sent by your sender
+                myPortalCam.setHeadPosition(ofPoint(m.getArgAsFloat(0), m.getArgAsFloat(1), m.getArgAsFloat(2)));
+            }
+            // get hand position
+            if(m.getAddress() == "/player0/hand_right/pos" || m.getAddress() == "/player0/hand_left/pos/"){
+                myPortalCam.setHandPosition(ofPoint(m.getArgAsFloat(0), m.getArgAsFloat(1), m.getArgAsFloat(2)));
+            }
+        } // end while
+    } // end if
     
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
-    
 	if (myPortalCam.needsCalib()) {
         /*
          *	So this camera needs to be calibrated only once every time
@@ -118,6 +146,8 @@ void testApp::draw(){
 		
 		myPortalCam.end();
 	}
+    
+    ofDrawBitmapString(oscDisplayMessage, 20, 40);
 }
 
 //--------------------------------------------------------------

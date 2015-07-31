@@ -3,6 +3,7 @@
 
 #include "ofMain.h"
 #include "ofxPortalCam.h"
+#include "ofxOsc.h"
 
 class testApp : public ofBaseApp{
 	
@@ -22,6 +23,9 @@ public:
 	void windowResized(int w, int h);
     
 	ofxPortalCam myPortalCam;
+    
+    ofxOscReceiver oscReceiver;
+    string oscDisplayMessage;
 };
 
 #endif
