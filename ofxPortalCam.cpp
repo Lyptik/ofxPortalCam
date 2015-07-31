@@ -17,22 +17,15 @@ void ofxPortalCam::setup(){
     
     ofSetLogLevel(OF_LOG_VERBOSE);
     
-	kinectDevice.setup();
-	kinectDevice.addDepthGenerator();
-	kinectDevice.addUserGenerator();
-	kinectDevice.setRegister(true);
-    kinectDevice.setMaxNumUsers(1);
-    ofAddListener(kinectDevice.userEvent, this, &ofxPortalCam::userEvent);
-    
-    user = new ofxOpenNIUser();
-    kinectDevice.setBaseUserClass(*user);
-    
-    kinectDevice.start();
-    
 	calibDone = false;
 	calibStep = 0;
 	screenNormal.set(0, 0, 1);
 	myOfCamera.setFarClip(20000);
+    
+    headPos = ofPoint(0,0,0);
+    handPos = ofPoint(0,0,0);
+    isUserTracked = false;
+    
 	loadCalib();
 }
 
@@ -87,20 +80,20 @@ void ofxPortalCam::resetCalib() {
 	calibDone = false;
 }
 
-ofxOpenNIUser ofxPortalCam::getViewerBody() {
-	return *user;
-}
-
 void ofxPortalCam::drawCalib() {
-    kinectDevice.update();
-    for(int i = 0; i < kinectDevice.getNumTrackedUsers(); i++){
-        user = &kinectDevice.getTrackedUser(i);
-	}
-	bool canCalibrate = (kinectDevice.getNumTrackedUsers() > 0 ) ? true : false;
+	bool canCalibrate = isUserTracked;
 	ofPushStyle();
 	ofSetColor(255, 255, 255);
 	ofFill();
-	kinectDevice.drawDebug(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+	if(isUserTracked){
+        ofPushStyle();
+		ofSetColor(0, 255, 0);
+		ofCircle(headPos.x, headPos.y, headPos.z, 20);
+        ofCircle(handPos.x, handPos.y, handPos.z, 10);
+		ofPopStyle();
+    } else {
+        ofDrawBitmapString("No user detected. Can't calibrate.", 20, 20);
+    }
 	if (canCalibrate) {
 		int rad = 30;
 		int circleX = 0;
@@ -117,12 +110,8 @@ void ofxPortalCam::drawCalib() {
 }
 
 void ofxPortalCam::begin() {
-    kinectDevice.update();
-    for(int i = 0; i < kinectDevice.getNumTrackedUsers(); i++){
-        user = &kinectDevice.getTrackedUser(i);
-	}
-	if (user->isFound() && user->getJoint(JOINT_HEAD).isFound()) {
-		ofVec3f screenHead = screenify(user->getJoint(JOINT_HEAD).getWorldPosition());
+	if (isUserTracked && headPos != ofVec3f(0,0,0)) {
+		ofVec3f screenHead = screenify(headPos);
 		myOfCamera.setPosition(screenHead);
 	} else {
 		myOfCamera.setPosition(0, 0, ofGetWindowWidth() * 2.5);
@@ -139,18 +128,15 @@ void ofxPortalCam::begin() {
 
 void ofxPortalCam::end() {
 	myOfCamera.end();
-}
-
-void ofxPortalCam::userEvent(ofxOpenNIUserEvent & event){
-    ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user " << event.id << " from device" ;
+    isUserTracked = false;
 }
 
 void ofxPortalCam::createCalibRay() {
-	if ((!calibDone) && user->isFound() && user->getJoint(JOINT_HEAD).isFound() && user->getJoint(JOINT_LEFT_HAND).isFound()) {
+	if ((!calibDone) && isUserTracked && headPos!=ofVec3f(0,0,0) && handPos!=ofVec3f(0,0,0)) {
 		ofVec3f headPosition, handPosition;
-		headPosition = user->getJoint(JOINT_HEAD).getWorldPosition();
+		headPosition = headPos;
 		// for some reason "Left" is from the kinect's perspective, so I changed it to the human perspective
-		handPosition = user->getJoint(JOINT_LEFT_HAND).getWorldPosition();
+		handPosition = handPos;
 		calibRays[calibStep] = ofRay(headPosition, handPosition - headPosition);
 		calibStep = calibStep + 1;
 		ofLog() << headPosition;
@@ -233,7 +219,7 @@ void ofxPortalCam::calcCalib(){
 void ofxPortalCam::tweakOrientation(){
 	if (calibDone) {
 		tweakAngle = 0;
-		ofVec3f screenHead = screenify(user->getJoint(JOINT_HEAD).getWorldPosition());
+		ofVec3f screenHead = screenify(headPos);
 		tweakPerp = screenHead.getPerpendicular(screenNormal);
 		tweakAngle = screenHead.angle(screenNormal);
 		calibFile.loadFile("calib.xml");
@@ -258,3 +244,16 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 	newPoint.rotate(tweakAngle, tweakPerp);
 	return newPoint;
 }
+
+//--------------------------------------------------------------
+void ofxPortalCam::setHeadPosition(ofPoint pos){
+    headPos = pos;
+    isUserTracked = true;
+}
+
+//--------------------------------------------------------------
+void ofxPortalCam::setHandPosition(ofPoint pos){
+    handPos = pos;
+    isUserTracked = true;
+}
+

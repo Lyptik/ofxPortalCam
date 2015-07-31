@@ -9,7 +9,6 @@
  */
 
 #include "ofMain.h"
-#include "ofxOpenNI.h"
 #include "ofxRay.h"
 #include "ofxXmlSettings.h"
 
@@ -25,7 +24,6 @@ public:
 
 	void drawCalib();
 	void createCalibRay();
-	ofxOpenNIUser getViewerBody();
 
 	void loadCalib();
 	void saveCalib();
@@ -35,13 +33,18 @@ public:
 	ofVec3f screenify(ofVec3f kinectPoint);
 
 	void tweakOrientation();
+    
+    void setHeadPosition(ofPoint pos);
+    void setHandPosition(ofPoint pos);
 
 protected:
-	ofCamera myOfCamera;
-
-	ofxOpenNI kinectDevice;
-	ofxOpenNIUser* user;
-	void userEvent(ofxOpenNIUserEvent & event);
+	void updateUserFromOSC();
+    
+    ofCamera myOfCamera;
+    
+    ofPoint headPos;
+    ofPoint handPos;
+    bool isUserTracked;
 
 	bool calibDone;
 	int calibStep;
