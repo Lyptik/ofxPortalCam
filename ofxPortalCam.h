@@ -13,6 +13,7 @@
 #include "ofxXmlSettings.h"
 
 #define CALIBRATION_STEPS 12
+#define USER_TRACKED_TIMEOUT 6 // Number of frames before the user is considered not tracked anymore
 
 class ofxPortalCam : public ofCamera {
 public:
@@ -36,7 +37,6 @@ public:
     
     void setHeadPosition(ofPoint pos);
     void setHandPosition(ofPoint pos);
-    void isUserTracked(bool b);
 
 protected:
 	void updateUserFromOSC();
@@ -46,6 +46,7 @@ protected:
     ofPoint headPos;
     ofPoint handPos;
     bool bIsUserTracked;
+    int lastUpdateTimeout;
 
 	bool calibDone;
 	int calibStep;

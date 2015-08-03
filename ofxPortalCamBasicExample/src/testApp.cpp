@@ -28,6 +28,10 @@ void testApp::setup() {
 
 //--------------------------------------------------------------
 void testApp::update(){
+    // To update the portalCam, 2 points are needed :
+    // myPortalCam.setHeadPosition( ofPoint p );    // The head defines the point of view of the camera
+    // myPortalCam.setHandPosition( ofPoint p );    // The hand is used for calibration (see calibration protocol described below)
+    
     // Get head position with osc
     // Here, kinectUsers osc protocol is used
     if(oscReceiver.hasWaitingMessages()){
@@ -37,12 +41,8 @@ void testApp::update(){
             ofxOscMessage m;
             oscReceiver.getNextMessage( &m );
             
-            // IMPORTANT : Say to the camera if there is a user tracked. 
-            if(m.getAddress() == "/player0/detect" || m.getAddress() == "/player0/detect/"){    // can be useful to check both, in case you don't know exactly what is sent by your sender
-                myPortalCam.isUserTracked(m.getArgAsInt32(0));
-            }
             // get head position
-            if(m.getAddress() == "/player0/head/pos" || m.getAddress() == "/player0/head/pos/"){
+            if(m.getAddress() == "/player0/head/pos" || m.getAddress() == "/player0/head/pos/"){    // can be useful to check both, in case you don't know exactly what is sent by your sender
                 myPortalCam.setHeadPosition(ofPoint(m.getArgAsFloat(0), m.getArgAsFloat(1), m.getArgAsFloat(2)));
             }
             // get hand position

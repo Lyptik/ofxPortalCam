@@ -25,6 +25,7 @@ void ofxPortalCam::setup(){
     headPos = ofPoint(0,0,0);
     handPos = ofPoint(0,0,0);
     bIsUserTracked = false;
+    lastUpdateTimeout = USER_TRACKED_TIMEOUT;
     
 	loadCalib();
 }
@@ -128,6 +129,10 @@ void ofxPortalCam::begin() {
 
 void ofxPortalCam::end() {
 	myOfCamera.end();
+    lastUpdateTimeout--;
+    if(lastUpdateTimeout == 0){
+        bIsUserTracked = false;
+    }
 }
 
 void ofxPortalCam::createCalibRay() {
@@ -247,14 +252,14 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 //--------------------------------------------------------------
 void ofxPortalCam::setHeadPosition(ofPoint pos){
     headPos = pos;
+    bIsUserTracked = true;
+    lastUpdateTimeout = USER_TRACKED_TIMEOUT;
 }
 
 //--------------------------------------------------------------
 void ofxPortalCam::setHandPosition(ofPoint pos){
     handPos = pos;
+    bIsUserTracked = true;
+    lastUpdateTimeout = USER_TRACKED_TIMEOUT;
 }
 
-//--------------------------------------------------------------
-void ofxPortalCam::isUserTracked(bool b){
-    bIsUserTracked = b;
-}
