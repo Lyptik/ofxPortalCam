@@ -37,6 +37,8 @@ public:
     
     void setHeadPosition(ofPoint pos);
     void setHandPosition(ofPoint pos);
+    ofPoint getHeadPosition(){ return headPos; };
+    ofPoint getCalibratedHeadPosition(){ return screenify(headPos); };
 
 protected:
 	void updateUserFromOSC();
