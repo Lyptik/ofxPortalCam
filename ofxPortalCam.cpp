@@ -155,6 +155,15 @@ void ofxPortalCam::drawCalib() {
 	ofPopStyle();
 }
 
+void ofxPortalCam::exitCalib(){
+    loadCalib();
+    if(needsCalib()){
+        ofLogError("ofxPortalCam") << "Error : there is no correct calibration configuration saved. You must finish this calibration";
+    } else {
+        ofLogNotice("ofxPortalCam") << "Calibration stopped. Last configuration loaded";
+    }
+}
+
 void ofxPortalCam::begin() {
 	if (bIsUserTracked && headPos != ofVec3f(0,0,0)) {
 		ofVec3f screenHead = screenify(headPos);

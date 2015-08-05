@@ -31,6 +31,7 @@ public:
 	void saveCalib();
 	void resetCalib();
 	bool needsCalib();
+    void exitCalib();
 	// transforms kinect space into screeen space
 	ofVec3f screenify(ofVec3f kinectPoint);
 
