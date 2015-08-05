@@ -1,48 +1,42 @@
-ofxPortalCam
-============
+# ofxPortalCam
 
-An OpenFrameworks addon that opens up portals to different worlds.  No, seriously, that's what it does.  : |
+An OpenFrameworks addon that provides you an anamorphic camera that can be used to transform your monitor (or projected image or whatever) to a viewport through which you can view a digital 3d environment.  This digital 3d environment behaves as if it's actually in front of your face.
 
-(Click image to watch video):
-[![ofxPortalCam Video](http://img.youtube.com/vi/9hOUw3zqobc/0.jpg "ofxPortalCam Video")](http://youtu.be/9hOUw3zqobc)
+This repository is a fork from [the addon by Albert Hwang](https://github.com/Albert/ofxPortalCam).
+The following changes were made : 
 
-By tracking the head with the Kinect and using some nifty features in OpenFrameworks, your monitor (or projected image or whatever) becomes a viewport through which you can view a digital 3d environment.  This digital 3d environment behaves as if it's actually in front of your face.
+- Compatibility up to OF 0.8.4
+- Removed ofxOpenNI dependency
+- Kinect tracking is replaced by OSC, so you can use any tracking device to set your camera position
 
-Dependencies
-------------
+## Dev env setup
 
-1.  OpenFrameworks up to this commit: https://github.com/openframeworks/openFrameworks/pull/1201
-2.  ofxOpenNI
-3.  ofxRay
-4.  ofxXmlSettings (comes packaged with OF, but just want to note it)
+### System
 
-Installation
-------------
+OSX 10.9
 
-*Only Mac is supported.  Will happily consider Pull Requests for support for other OS's*
+### Libs
 
-If you (1) don't have openFrameworks or (2) don't have a git-controlled version of openFrameworks, you'll need that (skip this step if you already have a git managed copy of OF).  In terminal, move to wherever you'd like to put openFrameworks, and run the following:
+OpenFrameworks 0.8.4 
 
-    git clone git://github.com/openframeworks/openFrameworks.git
-    cd openFrameworks/
+#### Addons
 
-Great, now that you're in the openframeworks directory, run the following:
+Already in OpenFrameworks
 
-    git remote add elliot git://github.com/elliotwoods/openFrameworks.git
-    git pull elliot feature-ofCamera-lensOffset
-    cd addons
-    git clone git://github.com/elliotwoods/ofxRay.git
-    git clone git://github.com/gameoverhack/ofxOpenNI.git
-    cd ofxOpenNI
-    git checkout ddb00b7b5ba00438c0146fed22add733377bcf59 -b ofxPortalCam
-    cd ..
-    git clone git://github.com/Albert/ofxPortalCam.git
+- ofxOsc
+- ofxXmlSettings
 
-*Quick note -- This implementation of ofxOpenNI is _not_ the current implementation.  This means that other apps that use ofxOpenNI will no longer work.  To switch between the two branches, cd into ofxOpenNI and run "git checkout master" or "git checkout ofxPortalCam".
+External Addons :
 
-Woot!  Now just open
-    /ofxPortalCam/ofxPortalCamBasicExample/ofxPortalCamBasicExample.xcodeproj/
+- [ofxRay](https://github.com/elliotwoods/ofxRay)
 
-For instructions on the calibration process, check out the notes in [src/testApp.cpp](https://github.com/Albert/ofxPortalCam/blob/master/ofxPortalCamBasicExample/src/testApp.cpp)
+## Dev env install
 
-Enjoy!
+### OSX & Linux
+
+Please refer to the external addons section above and use the links to get all the addons.
+
+If you encounter a compilation error with ofxRay, try the following changes : 
+
+- in the file `addons/ofxRay/src/ofxRay/Plane_fitToPoints.cpp`, replace all `UINT` occurrences by `UInt`
+- in the file `addons/ofxRay/src/ofxRay/Projector.cpp`, at line 14, replace `os << (ofVec4f&)node.getOrientationQuat();` by `os << node.getOrientationQuat().asVec4();`
