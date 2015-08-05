@@ -13,6 +13,10 @@ ofxPortalCam::ofxPortalCam() {
     
 }
 
+ofxPortalCam::~ofxPortalCam() {
+    ofRemoveListener(ofEvents().mousePressed, this, &ofxPortalCam::mousePressed);
+}
+
 void ofxPortalCam::setup(){
     
     ofSetLogLevel(OF_LOG_VERBOSE);
@@ -28,6 +32,8 @@ void ofxPortalCam::setup(){
     lastUpdateTimeout = USER_TRACKED_TIMEOUT;
     
 	loadCalib();
+    
+    ofAddListener(ofEvents().mousePressed, this, &ofxPortalCam::mousePressed);
 }
 
 void ofxPortalCam::loadCalib() {
@@ -276,6 +282,10 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 	newPoint.rotate(180, screenNormal);
 	newPoint.rotate(tweakAngle, tweakPerp);
 	return newPoint;
+}
+
+//--------------------------------------------------------------
+void ofxPortalCam::mousePressed(ofMouseEventArgs& args){
 }
 
 //--------------------------------------------------------------

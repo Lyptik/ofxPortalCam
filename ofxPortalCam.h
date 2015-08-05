@@ -19,6 +19,7 @@ class ofxPortalCam : public ofCamera {
 public:
 
 	ofxPortalCam();
+    ~ofxPortalCam();
 	void begin();
 	void end();
     void setup();
@@ -42,6 +43,7 @@ public:
 
 protected:
 	void updateUserFromOSC();
+    void mousePressed(ofMouseEventArgs& args);
     
     ofCamera myOfCamera;
     
