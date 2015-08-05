@@ -101,6 +101,25 @@ void ofxPortalCam::drawCalib() {
         ofFill();
         ofRect(ofGetWidth()/2 + 180 - 190, ofGetHeight() - 50 - 12, 200 * ((float)calibStep/(float)CALIBRATION_STEPS), 16);
         
+        ofSetColor(ofColor::white);
+        if(calibStep < 3){
+            ofDrawBitmapString( "  Notice that there's a red dot in the top left corner of the \n" \
+                               	" screen. Grab your computer mouse and, standing at a distance,\n" \
+                               	"extend your right arm forward so that your right hand obscures\n" \
+                               	"  your vision of the dot. When you're there, click the mouse \n" \
+                                "             button to set that calibration point.           \n" \
+                                " Staying at the same position, repeat this operation for the \n" \
+                                "                two other following red dots.                ",
+                               ofGetWidth()/2 - 250, ofGetHeight() - 170);
+        } else {
+            ofDrawBitmapString( " Great! You've just calibrated one set of points. Now we need \n" \
+                               	" to calibrate "+ ofToString(CALIBRATION_STEPS/3-1) +" other sets of points ("+ ofToString(CALIBRATION_STEPS/3) +" sets in total). Stand \n" \
+                               	" somewhere else in the room and repeat that action for those \n" \
+                               	"    three dots. The further you can move your head around,   \n" \
+                                "        the stronger your calibration will tend to be.        ",
+                               ofGetWidth()/2 - 250, ofGetHeight() - 170);
+        }
+        
 		ofPopStyle();
     } else {
         ofDrawBitmapString("No user detected. Can't calibrate.", ofGetWidth()/2-135, ofGetHeight()/2);

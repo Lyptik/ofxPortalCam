@@ -12,8 +12,8 @@
 #include "ofxRay.h"
 #include "ofxXmlSettings.h"
 
-#define CALIBRATION_STEPS 12
-#define USER_TRACKED_TIMEOUT 6 // Number of frames before the user is considered not tracked anymore
+#define CALIBRATION_STEPS 12    // Must be multiple of 3
+#define USER_TRACKED_TIMEOUT 6  // Number of frames before the user is considered not tracked anymore
 
 class ofxPortalCam : public ofCamera {
 public:
