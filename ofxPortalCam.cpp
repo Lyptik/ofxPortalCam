@@ -22,6 +22,7 @@ void ofxPortalCam::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     
 	calibDone = false;
+    tweakDone = false;
 	calibStep = 0;
 	screenNormal.set(0, 0, 1);
 	myOfCamera.setFarClip(20000);
@@ -64,11 +65,12 @@ void ofxPortalCam::loadCalib() {
 		tweakAngle = ofToFloat(calibFile.getValue("calib:tweakAngle", "0"));
 
 		calibDone = true;
+        tweakDone = true;
 	}
 }
 
 bool ofxPortalCam::needsCalib() {
-	return !calibDone;
+	return !(calibDone && tweakDone);
 }
 
 void ofxPortalCam::saveCalib() {
@@ -85,6 +87,7 @@ void ofxPortalCam::saveCalib() {
 void ofxPortalCam::resetCalib() {
 	calibStep = 0;
 	calibDone = false;
+    tweakDone = false;
 }
 
 void ofxPortalCam::drawCalib() {
@@ -116,6 +119,13 @@ void ofxPortalCam::drawCalib() {
                                 "             button to set that calibration point.           \n" \
                                 " Staying at the same position, repeat this operation for the \n" \
                                 "                two other following red dots.                ",
+                               ofGetWidth()/2 - 250, ofGetHeight() - 170);
+        } else if(calibStep == CALIBRATION_STEPS){
+            ofDrawBitmapString( "  To finalize the calibration, you will need to \"tweak\" the  \n" \
+                                "  orientation. Put your head in line with the center of the  \n" \
+                                "screen. It doesn't matter how far away you are from the screen\n" \
+                                "as long as your head is in line with the center.  Once there,\n" \
+                                "  click to tweak the orientation and ending the calibration.  ",
                                ofGetWidth()/2 - 250, ofGetHeight() - 170);
         } else {
             ofDrawBitmapString( " Great! You've just calibrated one set of points. Now we need \n" \
@@ -265,6 +275,7 @@ void ofxPortalCam::tweakOrientation(){
 		calibFile.setValue("calib:tweakPerp", ofToString(tweakPerp));
 		calibFile.setValue("calib:tweakAngle", ofToString(tweakAngle));
 		calibFile.saveFile("calib.xml");
+        tweakDone = true;
 	}
 }
 
@@ -286,6 +297,11 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 
 //--------------------------------------------------------------
 void ofxPortalCam::mousePressed(ofMouseEventArgs& args){
+    if(!calibDone){
+        createCalibRay();
+    } else if(calibDone && !tweakDone){
+        tweakOrientation();
+    }
 }
 
 //--------------------------------------------------------------

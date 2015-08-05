@@ -53,6 +53,7 @@ protected:
     int lastUpdateTimeout;
 
 	bool calibDone;
+    bool tweakDone;
 	int calibStep;
 	void calcCalib();
 	ofRay calibRays[CALIBRATION_STEPS];
