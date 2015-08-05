@@ -66,6 +66,8 @@ void ofxPortalCam::loadCalib() {
 
 		calibDone = true;
         tweakDone = true;
+        
+        ofLogVerbose("ofxPortalCam") << "Calibration settings loaded";
 	}
 }
 
@@ -81,13 +83,15 @@ void ofxPortalCam::saveCalib() {
 	calibFile.setValue("calib:rotation1", ofToString(rotation1));
 	calibFile.setValue("calib:rotation2Perp", ofToString(rotation2Perp));
 	calibFile.setValue("calib:rotation2", ofToString(rotation2));
-	calibFile.saveFile("calib.xml");	
+	calibFile.saveFile("calib.xml");
+	ofLogVerbose("ofxPortalCam") << "Calibration settings saved";
 }
 
 void ofxPortalCam::resetCalib() {
 	calibStep = 0;
 	calibDone = false;
     tweakDone = false;
+    ofLogVerbose("ofxPortalCam") << "Reset calibration";
 }
 
 void ofxPortalCam::drawCalib() {
