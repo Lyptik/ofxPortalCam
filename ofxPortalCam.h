@@ -34,6 +34,7 @@ public:
     void exitCalib();
 	// transforms kinect space into screeen space
 	ofVec3f screenify(ofVec3f kinectPoint);
+    ofVec3f worldify(ofVec3f screenPoint);
 
 	void tweakOrientation();
     
@@ -41,6 +42,8 @@ public:
     void setHandPosition(ofPoint pos);
     ofPoint getHeadPosition(){ return headPos; };
     ofPoint getCalibratedHeadPosition(){ return screenify(headPos); };
+    
+    ofPoint getCenterPoint();
 
 protected:
 	void updateUserFromOSC();

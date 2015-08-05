@@ -168,6 +168,10 @@ void ofxPortalCam::exitCalib(){
     }
 }
 
+ofPoint ofxPortalCam::getCenterPoint(){
+    return worldify(ofPoint(0, 0, ofGetWindowWidth() * 2.5));
+}
+
 void ofxPortalCam::begin() {
 	if (bIsUserTracked && headPos != ofVec3f(0,0,0)) {
 		ofVec3f screenHead = screenify(headPos);
@@ -305,6 +309,22 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 	newPoint.y = newPoint.y - ofGetWindowHeight()/2;
 	newPoint.rotate(180, screenNormal);
 	newPoint.rotate(tweakAngle, tweakPerp);
+	return newPoint;
+}
+
+//--------------------------------------------------------------
+ofVec3f ofxPortalCam::worldify(ofVec3f screenPoint){
+	ofVec3f newPoint;
+	newPoint = screenPoint;
+	newPoint.rotate(-tweakAngle, tweakPerp);
+    newPoint.rotate(-180, screenNormal);
+    newPoint.y = newPoint.y + ofGetWindowHeight()/2;
+    newPoint.x = -newPoint.x;
+    newPoint.x = newPoint.x + ofGetWindowWidth()/2;
+    newPoint.rotate(-rotation2, rotation2Perp);
+    newPoint.rotate(-rotation1, rotation1Perp);
+    newPoint = newPoint + displaceFactor;
+    newPoint = newPoint / scaleFactor;
 	return newPoint;
 }
 
