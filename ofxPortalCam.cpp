@@ -32,6 +32,9 @@ void ofxPortalCam::setup(){
     bIsUserTracked = false;
     lastUpdateTimeout = USER_TRACKED_TIMEOUT;
     
+    screen = WINDOW;
+    setScreen(screen);
+    
 	loadCalib();
     
     ofAddListener(ofEvents().mousePressed, this, &ofxPortalCam::mousePressed);
@@ -104,16 +107,16 @@ void ofxPortalCam::drawCalib() {
         ofPushStyle();
         // Draw head and hand
 		ofSetColor(0, 255, 0);
-		ofCircle(headPos.x * ofGetWidth(), headPos.y * ofGetHeight(), headPos.z * 100, 20);
-        ofCircle(handPos.x * ofGetWidth(), handPos.y * ofGetHeight(), handPos.z * 100, 10);
+		ofCircle(headPos.x * width, headPos.y * height, headPos.z * 100, 20);
+        ofCircle(handPos.x * width, handPos.y * height, handPos.z * 100, 10);
         
         // Draw calibration information
         ofSetColor(56,128,255);
-        ofDrawBitmapString("Calibration process : ", ofGetWidth()/2 - 190, ofGetHeight() - 50);
+        ofDrawBitmapString("Calibration process : ", width/2 - 190, height - 50);
         ofNoFill();
-        ofRect(ofGetWidth()/2 + 180 - 190, ofGetHeight() - 50 - 12, 200, 16);
+        ofRect(width/2 + 180 - 190, height - 50 - 12, 200, 16);
         ofFill();
-        ofRect(ofGetWidth()/2 + 180 - 190, ofGetHeight() - 50 - 12, 200 * ((float)calibStep/(float)CALIBRATION_STEPS), 16);
+        ofRect(width/2 + 180 - 190, height - 50 - 12, 200 * ((float)calibStep/(float)CALIBRATION_STEPS), 16);
         
         ofSetColor(ofColor::white);
         if(calibStep < 3){
@@ -124,35 +127,35 @@ void ofxPortalCam::drawCalib() {
                                 "             button to set that calibration point.           \n" \
                                 " Staying at the same position, repeat this operation for the \n" \
                                 "                two other following red dots.                ",
-                               ofGetWidth()/2 - 250, ofGetHeight() - 170);
+                               width/2 - 250, height - 170);
         } else if(calibStep == CALIBRATION_STEPS){
             ofDrawBitmapString( "  To finalize the calibration, you will need to \"tweak\" the  \n" \
                                 "  orientation. Put your head in line with the center of the  \n" \
                                 "screen. It doesn't matter how far away you are from the screen\n" \
                                 "as long as your head is in line with the center.  Once there,\n" \
                                 "  click to tweak the orientation and ending the calibration.  ",
-                               ofGetWidth()/2 - 250, ofGetHeight() - 170);
+                               width/2 - 250, height - 170);
         } else {
             ofDrawBitmapString( " Great! You've just calibrated one set of points. Now we need \n" \
                                	" to calibrate "+ ofToString(CALIBRATION_STEPS/3-1) +" other sets of points ("+ ofToString(CALIBRATION_STEPS/3) +" sets in total). Stand \n" \
                                	" somewhere else in the room and repeat that action for those \n" \
                                	"    three dots. The further you can move your head around,   \n" \
                                 "        the stronger your calibration will tend to be.        ",
-                               ofGetWidth()/2 - 250, ofGetHeight() - 170);
+                               width/2 - 250, height - 170);
         }
         
 		ofPopStyle();
     } else {
-        ofDrawBitmapString("No user detected. Can't calibrate.", ofGetWidth()/2-135, ofGetHeight()/2);
+        ofDrawBitmapString("No user detected. Can't calibrate.", width/2-135, height/2);
     }
     // Draw red circles
 	if (canCalibrate && !calibDone) {
 		int rad = 30;
 		int circleX = 0;
 		if ((calibStep % 3) == 1) {
-			circleX = ofGetWindowWidth();
+			circleX = width;
 		}
-		int circleY = ofGetWindowHeight() * (calibStep % 3) / 2;
+		int circleY = height * (calibStep % 3) / 2;
 		ofPushStyle();
 		ofSetColor(255, 0, 0);
 		ofCircle(circleX, circleY, rad);
@@ -171,7 +174,7 @@ void ofxPortalCam::exitCalib(){
 }
 
 ofPoint ofxPortalCam::getCenterPoint(){
-    return worldify(ofPoint(0, 0, ofGetWindowWidth() * 2.5));
+    return worldify(ofPoint(0, 0, width * 2.5));
 }
 
 void ofxPortalCam::begin() {
@@ -179,13 +182,13 @@ void ofxPortalCam::begin() {
 		ofVec3f screenHead = screenify(headPos);
 		myOfCamera.setPosition(screenHead);
 	} else {
-		myOfCamera.setPosition(0, 0, ofGetWindowWidth() * 2.5);
+		myOfCamera.setPosition(0, 0, width * 2.5);
 	}
 
 	ofVec3f topLeft, bottomLeft, bottomRight;
-	topLeft.set(-ofGetWindowWidth()/2, ofGetWindowHeight()/2, 0);
-	bottomLeft.set(-ofGetWindowWidth()/2, -ofGetWindowHeight()/2, 0);
-	bottomRight.set(ofGetWindowWidth()/2, -ofGetWindowHeight()/2, 0);
+	topLeft.set(-width/2, height/2, 0);
+	bottomLeft.set(-width/2, -height/2, 0);
+	bottomRight.set(width/2, -height/2, 0);
 	myOfCamera.setupOffAxisViewPortal(topLeft, bottomLeft, bottomRight);
 
 	myOfCamera.begin();
@@ -242,7 +245,7 @@ void ofxPortalCam::calcCalib(){
 
 	// find the scalar difference between planeDef[0]-planeDef[2] & window height
 	float kinectSpaceWindowHeight = planeDefinition[0].distance(planeDefinition[2]);
-	scaleFactor = ofGetWindowHeight() / kinectSpaceWindowHeight;
+	scaleFactor = height / kinectSpaceWindowHeight;
 	for (int i = 0; i < 3; i++) {
 		planeDefinition[i] = planeDefinition[i] * scaleFactor;
 	}
@@ -253,7 +256,7 @@ void ofxPortalCam::calcCalib(){
 	// find the rotation required to get planeDef[1] & planeDef[2] in place
 	ofVec3f rotation1Init = planeDefinition[2] - planeDefinition[0];
 	ofVec3f rotation1End;
-	rotation1End.set(0, ofGetWindowHeight(), 0);
+	rotation1End.set(0, height, 0);
 
 	rotation1Perp = rotation1Init.getPerpendicular(rotation1End);
 	rotation1 = rotation1Init.angle(rotation1End);
@@ -265,7 +268,7 @@ void ofxPortalCam::calcCalib(){
 	rotation2InitDebugYSquash = rotation2Init;
 	rotation2InitDebugYSquash.y = 0; // Force this whole thing into a 2d rotation
 	rotation2End;
-	rotation2End.set(ofGetWindowWidth(), ofGetWindowHeight()/2, 0);
+	rotation2End.set(width, height/2, 0);
 	rotation2EndSquash = rotation2End;
 	rotation2EndSquash.y = 0;
 	rotation2Perp = rotation1End;
@@ -306,9 +309,9 @@ ofVec3f ofxPortalCam::screenify(ofVec3f kinectPoint){
 	newPoint = newPoint - displaceFactor;
 	newPoint.rotate(rotation1, rotation1Perp);
 	newPoint.rotate(rotation2, rotation2Perp);
-	newPoint.x = newPoint.x - ofGetWindowWidth()/2;
+	newPoint.x = newPoint.x - width/2;
 	newPoint.x = -newPoint.x;
-	newPoint.y = newPoint.y - ofGetWindowHeight()/2;
+	newPoint.y = newPoint.y - height/2;
 	newPoint.rotate(180, screenNormal);
 	newPoint.rotate(tweakAngle, tweakPerp);
 	return newPoint;
@@ -320,9 +323,9 @@ ofVec3f ofxPortalCam::worldify(ofVec3f screenPoint){
 	newPoint = screenPoint;
 	newPoint.rotate(-tweakAngle, tweakPerp);
     newPoint.rotate(-180, screenNormal);
-    newPoint.y = newPoint.y + ofGetWindowHeight()/2;
+    newPoint.y = newPoint.y + height/2;
     newPoint.x = -newPoint.x;
-    newPoint.x = newPoint.x + ofGetWindowWidth()/2;
+    newPoint.x = newPoint.x + width/2;
     newPoint.rotate(-rotation2, rotation2Perp);
     newPoint.rotate(-rotation1, rotation1Perp);
     newPoint = newPoint + displaceFactor;
@@ -353,3 +356,39 @@ void ofxPortalCam::setHandPosition(ofPoint pos){
     lastUpdateTimeout = USER_TRACKED_TIMEOUT;
 }
 
+//--------------------------------------------------------------
+void ofxPortalCam::setScreen(Screen s){
+    screen = s;
+    
+    switch (s) {
+        case WINDOW:
+            ofAddListener(ofEvents().windowResized, this, &ofxPortalCam::setScreenSizeOnResize);
+            width = ofGetWidth();
+            height = ofGetHeight();
+            ofLogNotice("ofxPortalCam") << "Camera screen set to window resolution";
+            break;
+            
+        case CUSTOM:
+            ofRemoveListener(ofEvents().windowResized, this, &ofxPortalCam::setScreenSizeOnResize);
+            ofLogNotice("ofxPortalCam") << "Camera screen set to custom resolution";
+            break;
+            
+        default:
+            break;
+    }
+}
+
+//--------------------------------------------------------------
+void ofxPortalCam::setScreenSize(int w, int h){
+    if(screen != CUSTOM){
+        setScreen(CUSTOM);
+    }
+    width = w;
+    height = h;
+};
+
+//--------------------------------------------------------------
+void ofxPortalCam::setScreenSizeOnResize(ofResizeEventArgs& args){
+    width = args.width;
+    height = args.height;
+};

@@ -18,6 +18,11 @@
 class ofxPortalCam : public ofCamera {
 public:
 
+    enum Screen{
+        WINDOW,
+        CUSTOM
+    };
+    
 	ofxPortalCam();
     ~ofxPortalCam();
 	void begin();
@@ -38,6 +43,8 @@ public:
 
 	void tweakOrientation();
     
+    void setScreen(Screen s);
+    void setScreenSize(int w, int h);
     void setHeadPosition(ofPoint pos);
     void setHandPosition(ofPoint pos);
     ofPoint getHeadPosition(){ return headPos; };
@@ -48,6 +55,7 @@ public:
 protected:
 	void updateUserFromOSC();
     void mousePressed(ofMouseEventArgs& args);
+    void setScreenSizeOnResize(ofResizeEventArgs& args);
     
     ofCamera myOfCamera;
     
@@ -55,6 +63,10 @@ protected:
     ofPoint handPos;
     bool bIsUserTracked;
     int lastUpdateTimeout;
+    
+    Screen screen;
+    int width;
+    int height;
 
 	bool calibDone;
     bool tweakDone;
