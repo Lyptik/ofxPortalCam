@@ -99,6 +99,7 @@ void ofxPortalCam::drawCalib() {
 	ofPushStyle();
 	ofSetColor(255, 255, 255);
 	ofFill();
+    // Draw calibration instructions and user head/hand
 	if(bIsUserTracked){
         ofPushStyle();
         // Draw head and hand
@@ -144,7 +145,8 @@ void ofxPortalCam::drawCalib() {
     } else {
         ofDrawBitmapString("No user detected. Can't calibrate.", ofGetWidth()/2-135, ofGetHeight()/2);
     }
-	if (canCalibrate) {
+    // Draw red circles
+	if (canCalibrate && !calibDone) {
 		int rad = 30;
 		int circleX = 0;
 		if ((calibStep % 3) == 1) {
