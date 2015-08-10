@@ -165,7 +165,14 @@ void ofxPortalCam::drawCalib() {
 }
 
 void ofxPortalCam::exitCalib(){
-    loadCalib();
+    // If calibration not finished, load last settings
+    if(needsCalib()){
+        loadCalib();
+    } else {
+        ofLogNotice("ofxPortalCam") << "Calibration ended.";
+        return;
+    }
+    // If cam still need calibration, that means no settings were loaded so calibration must be done
     if(needsCalib()){
         ofLogError("ofxPortalCam") << "Error : there is no correct calibration configuration saved. You must finish this calibration";
     } else {
