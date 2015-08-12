@@ -42,6 +42,7 @@ public:
     ofVec3f worldify(ofVec3f screenPoint);
 
 	void tweakOrientation();
+    void applyOffsetToOrientation(ofVec3f offset);
     
     void setScreen(Screen s);
     void setScreenSize(int w, int h);
@@ -64,6 +65,8 @@ protected:
     ofPoint handPos;
     bool bIsUserTracked;
     int lastUpdateTimeout;
+    
+    ofPoint tweakHeadPos;
     
     Screen screen;
     int width;

@@ -29,6 +29,7 @@ void ofxPortalCam::setup(){
     
     headPos = ofPoint(0,0,0);
     handPos = ofPoint(0,0,0);
+    tweakHeadPos = ofPoint(0,0,0);
     bIsUserTracked = false;
     lastUpdateTimeout = USER_TRACKED_TIMEOUT;
     
@@ -313,8 +314,27 @@ void ofxPortalCam::calcCalib(){
 //--------------------------------------------------------------
 void ofxPortalCam::tweakOrientation(){
 	if (calibDone) {
+        tweakHeadPos = headPos;
+        
 		tweakAngle = 0;
 		ofVec3f screenHead = screenify(headPos);
+		tweakPerp = screenHead.getPerpendicular(screenNormal);
+		tweakAngle = screenHead.angle(screenNormal);
+		calibFile.loadFile("calib.xml");
+		calibFile.setValue("calib:tweakPerp", ofToString(tweakPerp));
+		calibFile.setValue("calib:tweakAngle", ofToString(tweakAngle));
+		calibFile.saveFile("calib.xml");
+        tweakDone = true;
+	}
+}
+
+//--------------------------------------------------------------
+void ofxPortalCam::applyOffsetToOrientation(ofVec3f offset){
+	if (calibDone) {
+        ofVec3f point = headPos + offset;
+        
+		tweakAngle = 0;
+		ofVec3f screenHead = screenify(point);
 		tweakPerp = screenHead.getPerpendicular(screenNormal);
 		tweakAngle = screenHead.angle(screenNormal);
 		calibFile.loadFile("calib.xml");
