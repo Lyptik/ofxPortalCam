@@ -56,6 +56,7 @@ protected:
 	void updateUserFromOSC();
     void mousePressed(ofMouseEventArgs& args);
     void setScreenSizeOnResize(ofResizeEventArgs& args);
+    void updateTimeout();
     
     ofCamera myOfCamera;
     

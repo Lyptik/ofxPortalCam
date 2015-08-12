@@ -98,6 +98,8 @@ void ofxPortalCam::resetCalib() {
 }
 
 void ofxPortalCam::drawCalib() {
+    updateTimeout();
+    
 	bool canCalibrate = bIsUserTracked;
 	ofPushStyle();
 	ofSetColor(255, 255, 255);
@@ -212,10 +214,7 @@ void ofxPortalCam::begin() {
 
 void ofxPortalCam::end() {
 	myOfCamera.end();
-    lastUpdateTimeout--;
-    if(lastUpdateTimeout == 0){
-        bIsUserTracked = false;
-    }
+    updateTimeout();
 }
 
 void ofxPortalCam::createCalibRay() {
@@ -407,4 +406,12 @@ void ofxPortalCam::setScreenSize(int w, int h){
 void ofxPortalCam::setScreenSizeOnResize(ofResizeEventArgs& args){
     width = args.width;
     height = args.height;
+};
+
+//--------------------------------------------------------------
+void ofxPortalCam::updateTimeout(){
+    lastUpdateTimeout--;
+    if(lastUpdateTimeout == 0){
+        bIsUserTracked = false;
+    }
 };
