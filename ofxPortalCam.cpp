@@ -106,9 +106,11 @@ void ofxPortalCam::drawCalib() {
 	if(bIsUserTracked){
         ofPushStyle();
         // Draw head and hand
-		ofSetColor(0, 255, 0);
-		ofCircle(headPos.x * width, headPos.y * height, headPos.z * 100, 20);
-        ofCircle(handPos.x * width, handPos.y * height, handPos.z * 100, 10);
+        if(!calibDone){
+            ofSetColor(0, 255, 0);
+            ofCircle(headPos.x * width, headPos.y * height, headPos.z * 100, 20);
+            ofCircle(handPos.x * width, handPos.y * height, handPos.z * 100, 10);
+        }
         
         // Draw calibration information
         ofSetColor(56,128,255);
@@ -161,6 +163,13 @@ void ofxPortalCam::drawCalib() {
 		ofCircle(circleX, circleY, rad);
 		ofPopStyle();
 	}
+    // Draw center of the screen
+    else if(canCalibrate && calibDone && !tweakDone){
+        ofPushStyle();
+		ofSetColor(255, 0, 0);
+		ofCircle(width/2.0f, height/2.0f, 30);
+		ofPopStyle();
+    }
 	ofPopStyle();
 }
 
