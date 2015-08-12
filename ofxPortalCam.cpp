@@ -102,6 +102,15 @@ void ofxPortalCam::drawCalib() {
     
 	bool canCalibrate = bIsUserTracked;
 	ofPushStyle();
+    
+    ofNoFill();
+    if(bIsUserTracked){
+        ofSetColor(0, 255, 0);
+    } else {
+        ofSetColor(255, 0, 0);
+    }
+    ofRect(1, 1, width-1, height-1);
+    
 	ofSetColor(255, 255, 255);
 	ofFill();
     // Draw calibration instructions and user head/hand
