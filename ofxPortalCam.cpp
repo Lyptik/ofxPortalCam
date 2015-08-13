@@ -61,7 +61,11 @@ void ofxPortalCam::loadCalib() {
 		rotation2Perp.set(ofToFloat(r2pSplit[0]), ofToFloat(r2pSplit[1]), ofToFloat(r2pSplit[2]));
 		
 		rotation2 = ofToFloat(calibFile.getValue("calib:rotation2", "0"));
-
+        
+        string thpSetting = calibFile.getValue("calib:tweakHeadPos", "0, 0, 0");
+		vector<string> thpSplit = ofSplitString(thpSetting, ", ", false, true);
+		tweakHeadPos.set(ofToFloat(thpSplit[0]), ofToFloat(thpSplit[1]), ofToFloat(thpSplit[2]));
+        
 		string tpSetting = calibFile.getValue("calib:tweakPerp", "0, 0, 0");
 		vector<string> tpSplit = ofSplitString(tpSetting, ", ", false, true);
 		tweakPerp.set(ofToFloat(tpSplit[0]), ofToFloat(tpSplit[1]), ofToFloat(tpSplit[2]));
@@ -321,6 +325,7 @@ void ofxPortalCam::tweakOrientation(){
 		tweakPerp = screenHead.getPerpendicular(screenNormal);
 		tweakAngle = screenHead.angle(screenNormal);
 		calibFile.loadFile("calib.xml");
+        calibFile.setValue("calib:tweakHeadPos", ofToString(tweakHeadPos));
 		calibFile.setValue("calib:tweakPerp", ofToString(tweakPerp));
 		calibFile.setValue("calib:tweakAngle", ofToString(tweakAngle));
 		calibFile.saveFile("calib.xml");
@@ -331,16 +336,12 @@ void ofxPortalCam::tweakOrientation(){
 //--------------------------------------------------------------
 void ofxPortalCam::applyOffsetToOrientation(ofVec3f offset){
 	if (calibDone) {
-        ofVec3f point = headPos + offset;
+        ofVec3f point = tweakHeadPos + offset;
         
 		tweakAngle = 0;
 		ofVec3f screenHead = screenify(point);
 		tweakPerp = screenHead.getPerpendicular(screenNormal);
 		tweakAngle = screenHead.angle(screenNormal);
-		calibFile.loadFile("calib.xml");
-		calibFile.setValue("calib:tweakPerp", ofToString(tweakPerp));
-		calibFile.setValue("calib:tweakAngle", ofToString(tweakAngle));
-		calibFile.saveFile("calib.xml");
         tweakDone = true;
 	}
 }
