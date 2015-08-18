@@ -334,9 +334,11 @@ void ofxPortalCam::tweakOrientation(){
 }
 
 //--------------------------------------------------------------
-void ofxPortalCam::applyOffsetToOrientation(ofVec3f offset){
+void ofxPortalCam::applyOffsetToOrientation(ofVec3f factor, ofVec3f offset){
 	if (calibDone) {
-        ofVec3f point = tweakHeadPos + offset;
+        ofVec3f point = ofVec3f(factor.x * tweakHeadPos.x + offset.x,
+                                factor.y * tweakHeadPos.y + offset.y,
+                                factor.z * tweakHeadPos.z + offset.z);
         
 		tweakAngle = 0;
 		ofVec3f screenHead = screenify(point);
@@ -344,6 +346,10 @@ void ofxPortalCam::applyOffsetToOrientation(ofVec3f offset){
 		tweakAngle = screenHead.angle(screenNormal);
         tweakDone = true;
 	}
+}
+
+void ofxPortalCam::applyOffsetToOrientation(ofVec3f offset){
+	applyOffsetToOrientation(ofVec3f(1,1,1), offset);
 }
 
 //--------------------------------------------------------------

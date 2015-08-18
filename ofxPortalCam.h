@@ -42,6 +42,7 @@ public:
     ofVec3f worldify(ofVec3f screenPoint);
 
 	void tweakOrientation();
+    void applyOffsetToOrientation(ofVec3f factor, ofVec3f offset);
     void applyOffsetToOrientation(ofVec3f offset);
     
     void setScreen(Screen s);
