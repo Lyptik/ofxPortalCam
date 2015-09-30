@@ -12,7 +12,7 @@
 #include "ofxRay.h"
 #include "ofxXmlSettings.h"
 
-#define CALIBRATION_STEPS 12    // Must be multiple of 3
+#define CALIBRATION_STEPS 18    // Must be multiple of 3
 #define USER_TRACKED_TIMEOUT 6  // Number of frames before the user is considered not tracked anymore
 
 class ofxPortalCam : public ofCamera {
@@ -52,6 +52,10 @@ public:
     ofPoint getCalibratedHeadPosition(){ return screenify(headPos); };
     
     ofPoint getCenterPoint();
+    
+    ofMatrix4x4 getProjectionMatrix(){return myOfCamera.getProjectionMatrix();};
+    ofMatrix4x4 getModelViewMatrix(){return myOfCamera.getModelViewMatrix();};
+    ofMatrix4x4 getModelViewProjectionMatrix(){return myOfCamera.getModelViewProjectionMatrix();};
 
 protected:
 	void updateUserFromOSC();
